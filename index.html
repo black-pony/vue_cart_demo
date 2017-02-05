@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <script src="./node_modules/vue/dist/vue.js"></script>
+    <script src="./data.js"></script>
+    <div id="app">
+        <template v-if="data.length">
+            <div class="products">
+                <div class="item">
+                    <span>商品名称</span>
+                    <span>商品单价</span>
+                    <span>购买数量</span>
+                    <span>操作</span>
+                </div>
+                <div class="item" v-for="item in data">
+                    <span>{{ item.name }}</span>
+                    <span>{{ item.price }}</span>
+                    <span>
+                        <em :class="{off: item.count == 1}" @click="reduce(item.id)">-</em>
+                        {{ item.count }}
+                        <em :class="{off: item.count == 10}" @click="add(item.id)">+</em>
+                    </span>
+                    <span>
+                        <i @click="remove(item.id)">移除</i>
+                    </span>
+                </div>
+            </div>
+            <div class="info">
+                <label>收件人:</label>
+                <input type="text"  placeholder="收件人姓名" v-model="myName">
+                <label>收货地址:</label>
+                <input type="text"  placeholder="请填写收货地址" v-model="myAddress">
+            </div>
+            <div class="result">
+                <h3>清单</h3>
+                商品总价: &yen;{{ totalMoney }}
+                <br>
+                收件人: {{ myName }}
+                <br>
+                收货地址: {{ myAddress }}
+            </div>
+        </template>
+        <template v-else>
+            购物车清空
+        </template>
+    </div>
+    <script>
+        var vm = new Vue({
+            el:'#app',
+            data:{
+                data:data,
+                myName:'',
+                myAddress:''
+            },
+            methods:{
+                reduce:function(id){
+                    for(var i=0;i<this.data.length;i++){
+                        console.log(this.data[i].id,id,'===');
+                        if(this.data[i].id === id){
+                            if(this.data[i].count === 1)return;
+                            this.data[i].count--;
+                            return;
+                        }
+                    }
+                },
+                add:function(id){
+                    for(var i=0;i<this.data.length;i++){
+                        if(this.data[i].id === id){
+                            if(this.data[i].count === 10)return;
+                            this.data[i].count++;
+                            return;
+                        }
+                    }
+                },
+                remove:function(id){
+                    for(var i=0;i<this.data.length;i++){
+                        if(this.data[i].id === id){
+                            this.data.splice(i,1);
+                            return;
+                        }
+                    }
+                }
+            },
+            computed:{
+                totalMoney:function(){
+                    var sum = 0;
+                    for(var i=0;i<this.data.length;i++){
+                        sum += this.data[i].price * this.data[i].count;
+                    }
+                    return sum;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
